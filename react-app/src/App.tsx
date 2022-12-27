@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -13,9 +13,8 @@ function  Nav(props:any) {
       <li key={t.id}>
         <a id={t.id} href={'/read/'+t.id} onClick={event =>{
           const target = event.target as Element;
-          console.log(target.id);
           event.preventDefault();
-          props.onChangeMode(target.id);
+          props.onChangeMode(+target.id);
         }}>{t.title}</a>
       </li>
     );
@@ -47,21 +46,39 @@ function Header(props: any){
 function App() {
   let topics: object;
   topics = [
-    {id:1, title:'html'},
-    {id:2, title:'css'},
-    {id:3, title:'1'},
-    {id:4, title:'test'},
+    {id:1, title:'html', body:'html body'},
+    {id:2, title:'css', body:'css body'},
+    {id:3, title:'1', body:'1 body'},
+    {id:4, title:'test', body:'test body'},
   ];
+  const [mode, setMode] = useState('WELCOME');
+  const [id, setId] = useState<number>(0);
+
+  let content:any = '';
+  if(mode === 'WELCOME'){
+    content = <Article title='WELCOME' body='Hello, WEB'></Article>
+  }else if(mode === 'READ'){
+    let title = '';
+    let body = '';
+    for(let i = 0; i < Object.keys(topics).length; i++){
+      if(Object.values(topics)[i].id === id){
+        title = Object.values(topics)[i].title;
+        body = Object.values(topics)[i].body;
+      }
+    }
+    content = <Article title={title} body={body}></Article>
+  }
 
   return (
     <div className="App">
       <Header title="ReactTest" onChangeMode={()=>{
-        alert('Header');
+        setMode('WELCOME');
       }} />
-      <Nav topics={topics} onChangeMode={(id:number) => {
-        alert(id);
+      <Nav topics={topics} onChangeMode={(_id:number) => {
+        setMode('READ');
+        setId(_id);
       }}></Nav>
-      <Article title="WelcomeTest" body="Hello, Body"></Article>
+      {content}
     </div>
   );
 }
